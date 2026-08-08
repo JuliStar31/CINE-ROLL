@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => IsAdmin::class,
             'user.only' => IsUser::class,
         ]);
+
+        $middleware->redirectGuestsTo(fn () => route('user.browse'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

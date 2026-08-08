@@ -1,72 +1,61 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-8">
-    <!-- Header Dashboard -->
-    <div>
-        <h2 class="text-2xl font-bold">Dashboard Analitis</h2>
-        <p class="text-gray-400 text-sm">Selamat datang kembali, Admin. Berikut ringkasan aktivitas sistem hari ini.</p>
-    </div>
+<div class="max-w-6xl mx-auto py-4">
+    <h1 class="text-2xl font-bold text-white mb-1">Dashboard Admin</h1>
+    <p class="text-sm text-gray-400 mb-8">Ringkasan aktivitas Movierate saat ini.</p>
 
-    <!-- Grid Kartu Statistik -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Stat 1: Total Film -->
-        <div class="bg-gray-800 border border-gray-700 p-6 rounded-xl flex items-center justify-between shadow-lg">
-            <div>
-                <p class="text-sm text-gray-400 font-medium">Total Koleksi Film</p>
-                <h3 class="text-3xl font-bold mt-1 text-indigo-400">142</h3>
-            </div>
-            <div class="p-3 bg-indigo-600/10 rounded-lg text-indigo-400 text-2xl">🎬</div>
+    {{-- Kartu statistik --}}
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="glass-card bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl p-6">
+            <p class="text-sm text-gray-400">Total Film</p>
+            <p class="text-3xl font-bold text-white mt-1">{{ $totalMovies }}</p>
         </div>
 
-        <!-- Stat 2: Total Checkout/Pesanan -->
-        <div class="bg-gray-800 border border-gray-700 p-6 rounded-xl flex items-center justify-between shadow-lg">
-            <div>
-                <p class="text-sm text-gray-400 font-medium">Total Gambar Di-checkout</p>
-                <h3 class="text-3xl font-bold mt-1 text-emerald-400">1,240</h3>
-            </div>
-            <div class="p-3 bg-emerald-600/10 rounded-lg text-emerald-400 text-2xl">🛒</div>
+        <div class="glass-card bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl p-6">
+            <p class="text-sm text-gray-400">Total Checkout</p>
+            <p class="text-3xl font-bold text-white mt-1">{{ $totalCheckouts }}</p>
         </div>
 
-        <!-- Stat 3: Rata-rata Rating Sistem -->
-        <div class="bg-gray-800 border border-gray-700 p-6 rounded-xl flex items-center justify-between shadow-lg sm:col-span-2 lg:col-span-1">
-            <div>
-                <p class="text-sm text-gray-400 font-medium">Rata-rata Rating Global</p>
-                <h3 class="text-3xl font-bold mt-1 text-amber-400">⭐ 4.6</h3>
-            </div>
-            <div class="p-3 bg-amber-600/10 rounded-lg text-amber-400 text-2xl">📈</div>
+        <div class="glass-card bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl p-6">
+            <p class="text-sm text-gray-400">Rata-rata Rating</p>
+            <p class="text-3xl font-bold text-white mt-1">
+                ⭐ {{ number_format($averageRating ?? 0, 1) }}
+            </p>
         </div>
     </div>
 
-    <!-- Aktivitas Pesanan Terbaru (Log Admin) -->
-    <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden shadow-lg">
-        <div class="p-6 border-b border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium">Log Checkout Terbaru oleh User</h3>
-            <span class="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Live Monitor</span>
+    {{-- Log order terbaru --}}
+    <div class="bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-white/10">
+            <h2 class="text-lg font-bold text-white">Checkout Terbaru</h2>
         </div>
-        <div class="p-6 divide-y divide-gray-700/50 space-y-4">
-            <!-- Item Log 1 -->
-            <div class="flex justify-between items-center pt-4 first:pt-0">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-600/20 text-indigo-400 rounded-full flex items-center justify-center font-bold text-sm">U1</div>
-                    <div>
-                        <p class="text-sm font-medium text-white">User #041 (Budi)</p>
-                        <p class="text-xs text-gray-400">Baru saja meng-checkout cover film <span class="text-indigo-300">"Interstellar"</span></p>
+
+        <div class="divide-y divide-white/10">
+            @forelse($recentOrders as $order)
+                <div class="px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-indigo-600/30 border border-indigo-400/30 flex items-center justify-center text-xs font-bold text-indigo-300">
+                            {{ strtoupper(substr($order->user->name, 0, 1)) }}
+                        </div>
+                        <div>
+                            <p class="text-sm text-white">
+                                <span class="font-semibold">{{ $order->user->name }}</span>
+                                checkout
+                                <span class="font-semibold">{{ $order->movie->title }}</span>
+                            </p>
+                            <p class="text-xs text-gray-500">{{ $order->created_at->diffForHumans() }}</p>
+                        </div>
                     </div>
+                    <span class="text-xs bg-green-500/15 text-green-400 border border-green-500/25 px-2.5 py-1 rounded-full">
+                        {{ ucfirst($order->status) }}
+                    </span>
                 </div>
-                <span class="text-xs text-gray-500">2 menit yang lalu</span>
-            </div>
-            <!-- Item Log 2 -->
-            <div class="flex justify-between items-center pt-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-600/20 text-indigo-400 rounded-full flex items-center justify-center font-bold text-sm">U2</div>
-                    <div>
-                        <p class="text-sm font-medium text-white">User #012 (Siti)</p>
-                        <p class="text-xs text-gray-400">Baru saja meng-checkout cover film <span class="text-indigo-300">"Inception"</span></p>
-                    </div>
+            @empty
+                <div class="px-6 py-10 text-center text-gray-500 text-sm">
+                    Belum ada aktivitas checkout.
                 </div>
-                <span class="text-xs text-gray-500">15 menit yang lalu</span>
-            </div>
+            @endforelse
         </div>
     </div>
 </div>

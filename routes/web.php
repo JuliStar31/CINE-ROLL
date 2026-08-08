@@ -20,8 +20,11 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 Route::get('/verify-otp', [RegisterController::class, 'showOtpForm'])->name('otp.verify.form')->middleware('guest');
 Route::post('/verify-otp', [RegisterController::class, 'verifyOtp'])->name('otp.verify')->middleware('guest');
 Route::post('/resend-otp', [RegisterController::class, 'resendOtp'])->name('otp.resend')->middleware('guest');
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
-Route::post('/login', [AuthController::class, 'login'])->name('login.attempt')->middleware('guest');
+
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login.attempt')
+    ->middleware(['guest', 'throttle:5,1']);
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // ============================
